@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vũ Cao Nguyên — iOS Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&family=Space+Mono&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #000000;
+    --bg-2: #0a0a0a;
+    --bg-3: #111111;
+    --bg-4: #1a1a1a;
+    --surface: #1c1c1e;
+    --surface-2: #2c2c2e;
+    --border: rgba(255,255,255,0.08);
+    --border-bright: rgba(255,255,255,0.15);
+    --text: #f5f5f7;
+    --text-2: #a1a1a6;
+    --text-3: #636366;
+    --accent: #0a84ff;
+    --accent-2: #30d158;
+    --accent-warm: #ffd60a;
+    --gradient-blue: linear-gradient(135deg, #0a84ff, #5ac8fa);
+    --gradient-green: linear-gradient(135deg, #30d158, #34c759);
+    --r: 18px;
+  }
+ 
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+  html { scroll-behavior: smooth; }
+ 
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    cursor: none;
+  }
+ 
+  /* CUSTOM CURSOR */
+  .cursor {
+    position: fixed;
+    width: 10px; height: 10px;
+    background: #fff;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1.5px solid rgba(255,255,255,0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.4s cubic-bezier(0.23,1,0.32,1), width 0.3s, height 0.3s, opacity 0.3s;
+  }
+  body:has(a:hover) .cursor-ring,
+  body:has(button:hover) .cursor-ring {
+    width: 56px; height: 56px;
+    border-color: var(--accent);
+  }
+ 
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px;
+    height: 52px;
+    background: rgba(0,0,0,0.72);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 19px;
+    font-style: italic;
+    color: var(--text);
+    text-decoration: none;
+    letter-spacing: -0.3px;
+  }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-2);
+    text-decoration: none;
+    letter-spacing: 0.01em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+    border: 1px solid rgba(10,132,255,0.4);
+    padding: 6px 16px;
+    border-radius: 20px;
+    transition: all 0.25s;
+  }
+  .nav-cta:hover { background: var(--accent); color: #fff; }
+ 
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding-top: 52px;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(10,132,255,0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 80% 80%, rgba(48,209,88,0.06) 0%, transparent 60%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+  }
+  .hero-content {
+    position: relative;
+    text-align: center;
+    max-width: 860px;
+    padding: 0 32px;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(10,132,255,0.1);
+    border: 1px solid rgba(10,132,255,0.25);
+    padding: 6px 16px; border-radius: 20px;
+    margin-bottom: 32px;
+    animation: fadeUp 0.8s ease both;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.6); }
+  }
+  .hero-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(52px, 9vw, 96px);
+    font-weight: 700;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    animation: fadeUp 0.8s 0.1s ease both;
+  }
+  .hero-name em {
+    font-style: italic;
+    background: var(--gradient-blue);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-title {
+    margin-top: 20px;
+    font-size: clamp(17px, 2.5vw, 22px);
+    font-weight: 300;
+    color: var(--text-2);
+    letter-spacing: -0.01em;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+  .hero-title strong { color: var(--text); font-weight: 500; }
+  .hero-desc {
+    margin-top: 24px;
+    font-size: 16px;
+    color: var(--text-3);
+    max-width: 520px;
+    margin-left: auto; margin-right: auto;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+  .hero-actions {
+    margin-top: 48px;
+    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+    animation: fadeUp 0.8s 0.4s ease both;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent);
+    color: #fff; font-size: 15px; font-weight: 500;
+    padding: 14px 28px; border-radius: 980px;
+    text-decoration: none;
+    transition: all 0.25s;
+    box-shadow: 0 0 0 0 rgba(10,132,255,0.4);
+  }
+  .btn-primary:hover {
+    background: #0071e3;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 30px rgba(10,132,255,0.35);
+  }
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--surface);
+    color: var(--text); font-size: 15px; font-weight: 500;
+    padding: 14px 28px; border-radius: 980px;
+    text-decoration: none;
+    border: 1px solid var(--border-bright);
+    transition: all 0.25s;
+  }
+  .btn-secondary:hover { background: var(--surface-2); transform: translateY(-1px); }
+  .hero-scroll {
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    animation: fadeUp 1s 0.6s ease both;
+  }
+  .hero-scroll span { font-size: 11px; letter-spacing: 0.1em; color: var(--text-3); text-transform: uppercase; }
+  .scroll-line {
+    width: 1px; height: 48px;
+    background: linear-gradient(to bottom, var(--text-3), transparent);
+    animation: scrollPulse 2s infinite;
+  }
+  @keyframes scrollPulse {
+    0% { transform: scaleY(0); transform-origin: top; opacity: 1; }
+    50% { transform: scaleY(1); opacity: 1; }
+    100% { transform: scaleY(1); opacity: 0; transform-origin: bottom; }
+  }
+ 
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+ 
+  /* FLOATING ICONS */
+  .sf-icons {
+    position: absolute;
+    font-size: 56px;
+    opacity: 0.04;
+    animation: float 6s ease-in-out infinite;
+    user-select: none;
+    pointer-events: none;
+  }
+  .sf-icons:nth-child(1) { top: 15%; left: 8%; animation-delay: 0s; font-size: 48px; }
+  .sf-icons:nth-child(2) { top: 20%; right: 10%; animation-delay: 1.5s; font-size: 64px; }
+  .sf-icons:nth-child(3) { bottom: 25%; left: 12%; animation-delay: 3s; font-size: 40px; }
+  .sf-icons:nth-child(4) { bottom: 20%; right: 8%; animation-delay: 0.8s; font-size: 52px; }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(3deg); }
+  }
+ 
+  /* SECTIONS */
+  section { padding: 120px 48px; max-width: 1200px; margin: 0 auto; }
+  .section-label {
+    font-size: 12px; font-weight: 500; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 700; line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  .section-title em { font-style: italic; }
+  .section-sub {
+    font-size: 17px; color: var(--text-2); font-weight: 300;
+    max-width: 540px; line-height: 1.7;
+  }
+ 
+  /* ABOUT */
+  #about {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+  }
+  .about-visual {
+    position: relative;
+    aspect-ratio: 4/5;
+    border-radius: 24px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .about-card {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 16px;
+  }
+  .apple-logo-big {
+    font-size: 120px; line-height: 1;
+    filter: drop-shadow(0 0 40px rgba(10,132,255,0.3));
+    animation: glow 3s ease-in-out infinite;
+  }
+  @keyframes glow {
+    0%, 100% { filter: drop-shadow(0 0 30px rgba(10,132,255,0.2)); }
+    50% { filter: drop-shadow(0 0 60px rgba(10,132,255,0.5)); }
+  }
+  .about-card-label {
+    font-size: 13px; color: var(--text-3); letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .about-card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px; font-style: italic; color: var(--text);
+  }
+  .about-info { display: flex; flex-direction: column; gap: 32px; }
+  .about-text { font-size: 16px; color: var(--text-2); line-height: 1.8; font-weight: 300; }
+  .about-text strong { color: var(--text); font-weight: 500; }
+  .about-stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 20px;
+    transition: border-color 0.25s;
+  }
+  .stat-card:hover { border-color: var(--border-bright); }
+  .stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px; font-weight: 700;
+    background: var(--gradient-blue); -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .stat-label { font-size: 13px; color: var(--text-3); margin-top: 4px; }
+  .goal-list { display: flex; flex-direction: column; gap: 12px; }
+  .goal-item {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 15px; color: var(--text-2);
+  }
+  .goal-item::before {
+    content: '';
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent-2); flex-shrink: 0;
+  }
+ 
+  /* SKILLS */
+  #skills {
+    padding: 120px 48px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .skills-header { text-align: center; margin-bottom: 72px; }
+  .skills-header .section-sub { margin: 0 auto; }
+  .skills-bento {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: auto;
+    gap: 16px;
+  }
+  .skill-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    transition: all 0.3s cubic-bezier(0.23,1,0.32,1);
+    position: relative; overflow: hidden;
+  }
+  .skill-card:hover {
+    border-color: var(--border-bright);
+    transform: translateY(-3px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+  .skill-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-bright), transparent);
+  }
+  .skill-card.wide { grid-column: span 8; }
+  .skill-card.medium { grid-column: span 4; }
+  .skill-card.half { grid-column: span 6; }
+  .skill-card.third { grid-column: span 4; }
+  .skill-card.quarter { grid-column: span 3; }
+ 
+  .skill-icon { font-size: 36px; margin-bottom: 16px; }
+  .skill-name {
+    font-size: 18px; font-weight: 600; color: var(--text);
+    margin-bottom: 6px;
+  }
+  .skill-desc { font-size: 14px; color: var(--text-3); line-height: 1.5; }
+ 
+  /* Swift special card */
+  .skill-card.swift-card {
+    background: linear-gradient(135deg, #0a84ff11, #5ac8fa08);
+    border-color: rgba(10,132,255,0.25);
+  }
+  .skill-card.swift-card::after {
+    content: '';
+    position: absolute; bottom: -30px; right: -30px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(10,132,255,0.15) 0%, transparent 70%);
+  }
+  .swift-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,149,0,0.15);
+    border: 1px solid rgba(255,149,0,0.3);
+    color: #ff9500;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
+    padding: 4px 12px; border-radius: 12px;
+    margin-bottom: 12px;
+  }
+  .tech-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .tech-pill {
+    font-size: 12px; font-weight: 500;
+    background: var(--bg-4);
+    border: 1px solid var(--border);
+    color: var(--text-2);
+    padding: 5px 12px; border-radius: 20px;
+    font-family: 'Space Mono', monospace;
+  }
+  .skill-bar-wrap { margin-top: 12px; }
+  .skill-bar-label {
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: var(--text-3); margin-bottom: 6px;
+  }
+  .skill-bar {
+    height: 3px; background: var(--bg-4); border-radius: 2px; overflow: hidden;
+  }
+  .skill-bar-fill {
+    height: 100%; border-radius: 2px;
+    background: var(--gradient-blue);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 1s cubic-bezier(0.23,1,0.32,1);
+  }
+  .skill-bar-fill.animated { transform: scaleX(1); }
+ 
+  /* JOURNEY */
+  #journey { padding: 120px 48px; max-width: 1200px; margin: 0 auto; }
+  .journey-header { margin-bottom: 72px; }
+  .timeline {
+    position: relative;
+    padding-left: 40px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute; left: 0; top: 8px; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent), var(--border), transparent);
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 64px;
+    opacity: 0; transform: translateX(-20px);
+    transition: all 0.6s cubic-bezier(0.23,1,0.32,1);
+  }
+  .timeline-item.visible { opacity: 1; transform: translateX(0); }
+  .timeline-dot {
+    position: absolute; left: -48px; top: 4px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 0 4px rgba(10,132,255,0.1);
+    transition: all 0.3s;
+  }
+  .timeline-item:hover .timeline-dot {
+    background: var(--accent);
+    box-shadow: 0 0 0 8px rgba(10,132,255,0.15);
+  }
+  .timeline-year {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px; color: var(--accent); margin-bottom: 8px;
+    letter-spacing: 0.1em;
+  }
+  .timeline-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px; font-weight: 700; color: var(--text);
+    margin-bottom: 10px; letter-spacing: -0.02em;
+  }
+  .timeline-desc {
+    font-size: 16px; color: var(--text-2); font-weight: 300;
+    line-height: 1.7; max-width: 600px;
+  }
+  .timeline-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 16px;
+    background: var(--surface); border: 1px solid var(--border);
+    font-size: 12px; color: var(--text-2);
+    padding: 6px 14px; border-radius: 20px;
+  }
+ 
+  /* CONTACT */
+  #contact {
+    padding: 120px 48px;
+    max-width: 900px; margin: 0 auto;
+    text-align: center;
+  }
+  .contact-glow {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 32px;
+    padding: 72px 56px;
+    overflow: hidden;
+  }
+  .contact-glow::before {
+    content: '';
+    position: absolute; top: -100px; left: 50%; transform: translateX(-50%);
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(10,132,255,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .contact-glow .section-title { font-size: clamp(32px, 4vw, 48px); }
+  .contact-email {
+    font-family: 'Space Mono', monospace;
+    font-size: 15px; color: var(--accent);
+    background: rgba(10,132,255,0.1);
+    border: 1px solid rgba(10,132,255,0.2);
+    padding: 12px 24px; border-radius: 12px;
+    display: inline-block; margin: 24px 0 40px;
+    text-decoration: none;
+    transition: all 0.25s;
+  }
+  .contact-email:hover { background: rgba(10,132,255,0.2); }
+  .contact-links { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+  .contact-link {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 14px; font-weight: 500;
+    color: var(--text-2); text-decoration: none;
+    background: var(--bg-3); border: 1px solid var(--border);
+    padding: 10px 20px; border-radius: 980px;
+    transition: all 0.25s;
+  }
+  .contact-link:hover {
+    color: var(--text); border-color: var(--border-bright);
+    transform: translateY(-2px);
+  }
+ 
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    max-width: 100%;
+  }
+  .footer-text { font-size: 13px; color: var(--text-3); }
+  .footer-heart { color: #ff375f; }
+ 
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0; transform: translateY(32px);
+    transition: all 0.7s cubic-bezier(0.23,1,0.32,1);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+ 
+  /* MOBILE */
+  @media (max-width: 768px) {
+    nav { padding: 0 24px; }
+    .nav-links { display: none; }
+    section, #about, #skills, #journey, #contact { padding: 80px 24px; }
+    #about { grid-template-columns: 1fr; gap: 40px; }
+    .about-visual { aspect-ratio: 3/2; }
+    .apple-logo-big { font-size: 80px; }
+    .skills-bento { grid-template-columns: 1fr; }
+    .skill-card.wide, .skill-card.medium, .skill-card.half,
+    .skill-card.third, .skill-card.quarter { grid-column: span 1; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+    .contact-glow { padding: 48px 28px; }
+  }
+</style>
+</head>
+<body>
+ 
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+ 
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">VCN</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#journey">Journey</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="mailto:nguyencaovu2007@gmail.com" class="nav-cta">Liên hệ</a>
+</nav>
+ 
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+ 
+  <div class="sf-icons">⌘</div>
+  <div class="sf-icons"></div>
+  <div class="sf-icons">⌥</div>
+  <div class="sf-icons">⇧</div>
+ 
+  <div class="hero-content">
+    <div class="hero-eyebrow">Aspiring iOS Engineer</div>
+    <h1 class="hero-name">Vũ Cao <em>Nguyên</em></h1>
+    <p class="hero-title">
+      Sinh viên <strong>CNTT @ PTIT</strong> — đang theo đuổi giấc mơ<br/>
+      trở thành <strong>iOS Engineer</strong>
+    </p>
+    <p class="hero-desc">
+      Đam mê xây dựng những trải nghiệm ứng dụng đẹp mắt trên hệ sinh thái Apple.
+      Tìm kiếm sự hoàn hảo từng pixel, từng dòng Swift.
+    </p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">
+        <span>🚀</span> Get in touch
+      </a>
+      <a href="#journey" class="btn-secondary">
+        <span>📖</span> My Journey
+      </a>
+    </div>
+  </div>
+ 
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+ 
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-visual reveal">
+    <div class="about-card">
+      <div class="apple-logo-big">🍎</div>
+      <div class="about-card-label">iOS Developer</div>
+      <div class="about-card-name">Vũ Cao Nguyên</div>
+    </div>
+  </div>
+  <div class="about-info">
+    <div class="reveal">
+      <div class="section-label">About Me</div>
+      <h2 class="section-title">Một sinh viên<br/><em>đang lớn</em></h2>
+      <p class="about-text">
+        Mình là <strong>Vũ Cao Nguyên</strong>, sinh viên Công nghệ Thông tin tại
+        <strong>Học viện Công nghệ Bưu chính Viễn thông (PTIT)</strong>.
+      </p>
+      <p class="about-text" style="margin-top:12px">
+        Từ những ngày đầu chạm tay vào máy tính, mình đã bị hút vào hệ sinh thái Apple —
+        cái cách mà phần cứng và phần mềm hòa quyện với nhau một cách hoàn hảo. Đó là lý do
+        mình muốn trở thành một <strong>iOS Engineer</strong>.
+      </p>
+    </div>
+    <div class="about-stats reveal">
+      <div class="stat-card">
+        <div class="stat-number">PTIT</div>
+        <div class="stat-label">Học viện BCVT</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">iOS</div>
+        <div class="stat-label">Engineering Goal</div>
+      </div>
+    </div>
+    <div class="reveal">
+      <div class="goal-list">
+        <div class="goal-item">Trở thành iOS Engineer chuyên nghiệp</div>
+        <div class="goal-item">Thành thạo Swift & SwiftUI</div>
+        <div class="goal-item">Publish ứng dụng lên App Store</div>
+        <div class="goal-item">Đóng góp vào cộng đồng Apple Developer Việt Nam</div>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- SKILLS -->
+<section id="skills">
+  <div class="skills-header reveal">
+    <div class="section-label">Technical Skills</div>
+    <h2 class="section-title">Công nghệ &<br/><em>công cụ</em></h2>
+    <p class="section-sub">Đang học và xây dựng nền tảng vững chắc để chinh phục hệ sinh thái Apple.</p>
+  </div>
+  <div class="skills-bento">
+ 
+    <!-- Swift - wide card -->
+    <div class="skill-card swift-card wide reveal">
+      <div class="swift-badge">⭐ Primary Goal</div>
+      <div class="skill-icon">🦅</div>
+      <div class="skill-name">Swift & SwiftUI</div>
+      <div class="skill-desc">Ngôn ngữ chính để xây dựng ứng dụng iOS. Mình đang học Swift, SwiftUI để tạo ra những giao diện native đẹp và hiệu năng cao.</div>
+      <div class="tech-pills">
+        <span class="tech-pill">Swift</span>
+        <span class="tech-pill">SwiftUI</span>
+        <span class="tech-pill">UIKit</span>
+        <span class="tech-pill">Xcode</span>
+        <span class="tech-pill">App Store</span>
+      </div>
+    </div>
+ 
+    <!-- Apple ecosystem -->
+    <div class="skill-card medium reveal">
+      <div class="skill-icon">🍎</div>
+      <div class="skill-name">Apple Ecosystem</div>
+      <div class="skill-desc">macOS, iOS, iPadOS — tìm hiểu sâu về hệ sinh thái và Human Interface Guidelines.</div>
+      <div class="tech-pills">
+        <span class="tech-pill">iOS</span>
+        <span class="tech-pill">macOS</span>
+        <span class="tech-pill">HIG</span>
+      </div>
+    </div>
+ 
+    <!-- C/C++ -->
+    <div class="skill-card third reveal">
+      <div class="skill-icon">⚙️</div>
+      <div class="skill-name">C / C++</div>
+      <div class="skill-desc">Nền tảng lập trình. Tư duy thuật toán và quản lý bộ nhớ.</div>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>Proficiency</span><span>60%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="--w:0.6"></div></div>
+      </div>
+    </div>
+ 
+    <!-- Git -->
+    <div class="skill-card third reveal">
+      <div class="skill-icon">🌿</div>
+      <div class="skill-name">Git & GitHub</div>
+      <div class="skill-desc">Version control, collaborative development và quản lý source code.</div>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>Proficiency</span><span>65%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="--w:0.65"></div></div>
+      </div>
+    </div>
+ 
+    <!-- HTML/CSS -->
+    <div class="skill-card third reveal">
+      <div class="skill-icon">🎨</div>
+      <div class="skill-name">HTML & CSS</div>
+      <div class="skill-desc">Nền tảng web. Xây dựng giao diện và hiểu các nguyên tắc thiết kế.</div>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>Proficiency</span><span>55%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="--w:0.55"></div></div>
+      </div>
+    </div>
+ 
+    <!-- Design mindset -->
+    <div class="skill-card half reveal">
+      <div class="skill-icon">✦</div>
+      <div class="skill-name">UI/UX Mindset</div>
+      <div class="skill-desc">Luôn đặt trải nghiệm người dùng lên hàng đầu. Học hỏi từ design language của Apple — tối giản, rõ ràng, và đẹp trong từng chi tiết.</div>
+      <div class="tech-pills">
+        <span class="tech-pill">Figma</span>
+        <span class="tech-pill">Prototyping</span>
+        <span class="tech-pill">Design System</span>
+      </div>
+    </div>
+ 
+    <!-- Learning mindset -->
+    <div class="skill-card half reveal">
+      <div class="skill-icon">🚀</div>
+      <div class="skill-name">Đang Học Hỏi</div>
+      <div class="skill-desc">Mình tin rằng hành trình quan trọng hơn đích đến. Mỗi ngày là một cơ hội để học thêm điều mới và trở thành phiên bản tốt hơn của hôm qua.</div>
+      <div class="tech-pills">
+        <span class="tech-pill">Algorithms</span>
+        <span class="tech-pill">OOP</span>
+        <span class="tech-pill">Data Structures</span>
+      </div>
+    </div>
+ 
+  </div>
+</section>
+ 
+<!-- JOURNEY -->
+<section id="journey">
+  <div class="journey-header reveal">
+    <div class="section-label">Journey</div>
+    <h2 class="section-title">Hành trình<br/><em>của mình</em></h2>
+    <p class="section-sub">Từ những bước chân đầu tiên đến ước mơ lớn hơn.</p>
+  </div>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-year">2024</div>
+      <div class="timeline-title">Bắt đầu hành trình</div>
+      <div class="timeline-desc">
+        Lần đầu tiên chạm tay vào lập trình, học những khái niệm cơ bản về tư duy máy tính.
+        Khám phá ra đam mê với thế giới phần mềm và bị cuốn hút bởi hệ sinh thái Apple.
+      </div>
+      <div class="timeline-tag">🌱 Khởi đầu</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-year">2025</div>
+      <div class="timeline-title">Sinh viên PTIT</div>
+      <div class="timeline-desc">
+        Chính thức bước vào <strong>Học viện Công nghệ Bưu chính Viễn thông</strong>,
+        chuyên ngành Công nghệ Thông tin. Xây dựng nền tảng vững chắc về thuật toán, cấu trúc dữ liệu
+        và lập trình hướng đối tượng. Xác định mục tiêu: trở thành iOS Engineer.
+      </div>
+      <div class="timeline-tag">🎓 PTIT — CNTT</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-year">2026+</div>
+      <div class="timeline-title">Loading... 🔋</div>
+      <div class="timeline-desc">
+        Tương lai đang được viết từng ngày. Mục tiêu: thành thạo Swift & SwiftUI,
+        publish ứng dụng đầu tiên lên App Store, và trở thành iOS Engineer chuyên nghiệp.
+        Hành trình vẫn tiếp tục.
+      </div>
+      <div class="timeline-tag">🚀 Sắp tới...</div>
+    </div>
+  </div>
+</section>
+ 
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-glow reveal">
+    <div class="section-label">Get in touch</div>
+    <h2 class="section-title">Kết nối<br/><em>với mình</em></h2>
+    <p class="section-sub" style="margin: 16px auto 0; max-width: 440px;">
+      Mình luôn mở lòng với những cơ hội học hỏi, hợp tác, hay đơn giản là một cuộc trò chuyện về iOS development.
+    </p>
+    <a href="mailto:nguyencaovu2007@gmail.com" class="contact-email">
+      nguyencaovu2007@gmail.com
+    </a>
+    <div class="contact-links">
+      <a href="mailto:nguyencaovu2007@gmail.com" class="contact-link">
+        <span>✉️</span> Email
+      </a>
+      <a href="#" class="contact-link">
+        <span>🐙</span> GitHub
+      </a>
+      <a href="#" class="contact-link">
+        <span>💼</span> LinkedIn
+      </a>
+      <a href="#" class="contact-link">
+        <span>🍎</span> Apple Developer
+      </a>
+    </div>
+  </div>
+</section>
+ 
+<!-- FOOTER -->
+<footer>
+  <div class="footer-text">© 2025 Vũ Cao Nguyên. Built with <span class="footer-heart">♥</span> & Swift dreams.</div>
+  <div class="footer-text">PTIT — iOS Engineer in the making 🚀</div>
+</footer>
+ 
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animCursor() {
+    cursor.style.left = mx - 5 + 'px';
+    cursor.style.top = my - 5 + 'px';
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx - 18 + 'px';
+    ring.style.top = ry - 18 + 'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+ 
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        // Skill bars
+        e.target.querySelectorAll('.skill-bar-fill').forEach(bar => {
+          bar.classList.add('animated');
+        });
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+ 
+  document.querySelectorAll('.reveal, .timeline-item').forEach(el => observer.observe(el));
+ 
+  // Nav active state
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current
+        ? 'var(--text)' : '';
+    });
+  });
+</script>
+</body>
+</html>
