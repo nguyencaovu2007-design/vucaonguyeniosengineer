@@ -498,7 +498,7 @@
   .skill-card.third { grid-column: span 4; }
 
   /* LOGO ICONS for skills */
-  .skill-logo { width: 80px; height: 80px; margin-bottom: 18px; flex-shrink: 0; }
+  .skill-logo { width: 80px; height: 80px; margin-bottom: 18px; flex-shrink: 0; display: block; object-fit: contain; }
 
   .skill-name {
     font-family: 'Syne', sans-serif;
@@ -710,7 +710,7 @@
 <li><a href="#journey">Journey</a></li>
 <li><a href="#contact">Contact</a></li>
 </ul>
-<a class="nav-cta" href="mailto:nguyencaovu2007@gmail.com">Liên hệ</a>
+<a class="nav-cta" href="/cdn-cgi/l/email-protection#bfd1d8cac6dad1dcded0c9ca8d8f8f88ffd8d2ded6d391dcd0d2">Liên hệ</a>
 </nav>
 <!-- HERO -->
 <section id="hero">
@@ -1001,11 +1001,11 @@
 <p class="section-sub" style="margin: 16px auto 0; max-width: 440px;">
       Mình luôn mở lòng với những cơ hội học hỏi, hợp tác, hay đơn giản là một cuộc trò chuyện về iOS development.
     </p>
-<a class="contact-email" href="mailto:vucaonguyen@example.com">
-      vucaonguyen@example.com
+<a class="contact-email" href="/cdn-cgi/l/email-protection#acdad9cfcdc3c2cbd9d5c9c2ecc9d4cdc1dcc0c982cfc3c1">
+      <span class="__cf_email__" data-cfemail="4c3a392f2d23222b393529220c29342d213c2029622f2321">[nguyencaovu2007@gmail.com]</span>
     </a>
 <div class="contact-links">
-<a class="contact-link" href="mailto:vucaonguyen@example.com">
+<a class="contact-link" href="/cdn-cgi/l/email-protection#285e5d4b4947464f5d514d46684d50494558444d064b4745">
 <svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><rect height="16" rx="2" width="20" x="2" y="4"></rect><path d="M22 7l-10 7L2 7"></path></svg>
         Email
       </a>
@@ -1029,7 +1029,7 @@
 <div class="footer-text">© 2026 Vũ Cao Nguyên. Built with <span class="footer-heart">♥</span> &amp; Swift dreams.</div>
 <div class="footer-text">PTIT — iOS Engineer in the making 🚀</div>
 </footer>
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // Custom cursor
   const cursor = document.getElementById('cursor');
   const ring = document.getElementById('cursorRing');
@@ -1060,15 +1060,16 @@
   // Nav active
   const sections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('.nav-links a');
-  window.addEventListener('scroll', () => {
-    let cur = '';
-    sections.forEach(s => {
-      if (window.scrollY >= s.offsetTop - 100) cur = s.id;
+  const navObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const active = document.querySelector('.nav-links a[href="#' + e.target.id + '"]');
+        if (active) active.classList.add('active');
+      }
     });
-    navLinks.forEach(a => {
-      a.style.color = a.getAttribute('href') === '#' + cur ? '#eeeeff' : '';
-    });
-  });
+  }, { threshold: 0.4 });
+  sections.forEach(s => navObserver.observe(s));
 </script>
 </body>
 </html>
